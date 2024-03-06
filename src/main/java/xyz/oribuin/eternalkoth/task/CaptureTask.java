@@ -12,6 +12,7 @@ public class CaptureTask extends BukkitRunnable {
 
     public CaptureTask(RosePlugin plugin) {
         this.plugin = plugin;
+        this.manager = this.plugin.getManager(KothManager.class);
     }
 
     @Override

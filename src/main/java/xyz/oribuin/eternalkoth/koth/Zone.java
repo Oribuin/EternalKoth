@@ -1,6 +1,7 @@
 package xyz.oribuin.eternalkoth.koth;
 
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,8 +18,8 @@ import java.util.UUID;
 public class Zone {
 
     // these are config defined
-    private final String id; 
-    private Region region; 
+    private final String id;
+    private Region region;
     private List<String> rewards;
     private long timeToCapture; // The time it takes to fully capture the zone
 
@@ -112,28 +113,32 @@ public class Zone {
     public void enter(Player player) {
         List<Player> inside = this.getPlayersInside();
 
+        System.out.println("Size: " + inside.size() + " Captain: " + this.captain + " Player: " + player.getUniqueId());
+
         // All players are on the same team so it doesnt matter
         if (TeamRegistry.isOnSameTeam(inside) && this.captain != null) {
-            System.out.println("All players are on the same team with a captain defined, we are not doing anything");
+            Bukkit.broadcast(Component.text("All players are on the same team with a captain defined, we are not doing anything"));
             return;
         }
 
         // This is the first player inside the region, they are now the captain
-        if (inside.size() <= 1) {
+        if (inside.size() <= 1 && this.captain == null) {
             this.captain = player.getUniqueId();
             this.paused = false;
             this.startOfCapture = System.currentTimeMillis();
-            System.out.println(player.getName() + "is now the captain of the zone");
+            Bukkit.broadcast(Component.text(player.getName() + " is now the captain of the zone"));
             return;
         }
 
-        // There are multiple players inside the region and they're not on the same team
+        // There are multiple players inside the region, and they're not on the same team
         // so we are pausing the capture and resetting the timer
         // wait for these players to be holding the zone
-        this.paused = true;
-        this.startOfCapture = 0;
-        this.captain = null;
-        System.out.println("The zone has been paused");
+        if (inside.size() > 1) {
+            this.paused = true;
+            this.startOfCapture = 0;
+            this.captain = null;
+            Bukkit.broadcast(Component.text("The zone has been paused"));
+        }
     }
 
     /**
@@ -149,8 +154,8 @@ public class Zone {
         if (this.captain != null && this.captain.equals(player.getUniqueId())) {
             this.captain = null;
             this.startOfCapture = 0;
-
-            System.out.println("The captain has left the zone, we're going to reset the captain & timer");
+            Bukkit.broadcast(Component.text("There is no captain inside the zone"));
+            return;
         }
 
         // Player has left the zone, we're going to reset the zone now
@@ -159,7 +164,7 @@ public class Zone {
             this.paused = false;
             this.startOfCapture = 0;
 
-            System.out.println("No one is inside the zone, we're going to reset everything");
+            Bukkit.broadcast(Component.text("No one is inside the zone, we're going to reset everything"));
             return;
         }
 
@@ -169,7 +174,7 @@ public class Zone {
             this.paused = false;
             this.startOfCapture = System.currentTimeMillis();
 
-            System.out.println("The last player inside the zone has left, we're going to reset the captain & timer");
+            Bukkit.broadcast(Component.text("Captain has left the zone, we're now going to overwrite the captain"));
         }
     }
 

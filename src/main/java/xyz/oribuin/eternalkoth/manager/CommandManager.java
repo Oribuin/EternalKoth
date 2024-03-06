@@ -1,10 +1,13 @@
 package xyz.oribuin.eternalkoth.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
 import dev.rosewood.rosegarden.manager.AbstractCommandManager;
+import xyz.oribuin.eternalkoth.command.KothCommand;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class CommandManager extends AbstractCommandManager {
 
@@ -13,13 +16,8 @@ public class CommandManager extends AbstractCommandManager {
     }
 
     @Override
-    public List<Class<? extends RoseCommandWrapper>> getRootCommands() {
-        return List.of(ExampleCommandWrapper.class);
-    }
-
-    @Override
-    public List<String> getArgumentHandlerPackages() {
-        return List.of("xyz.oribuin.eternalkoth.command.argument");
+    public List<Function<RosePlugin, BaseRoseCommand>> getRootCommands() {
+        return List.of(KothCommand::new);
     }
 
 }

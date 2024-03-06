@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.config.CommentedConfigurationSection;
 import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.manager.Manager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -48,6 +49,8 @@ public class KothManager extends Manager {
             // Cannot start a game if one is already active
             if (this.activeZone != null) return;
             if (System.currentTimeMillis() - this.lastKothTime < delay * 20) return;
+
+            System.out.println("Starting KOTH");
 
             // Start a new KOTH
             Zone zone = new ArrayList<>(this.cachedZones.values()).get(((int) (Math.random() * this.cachedZones.size())));
@@ -110,13 +113,14 @@ public class KothManager extends Manager {
      */
     public void start(String id) {
         if (this.activeZone != null) {
+            Bukkit.broadcast(Component.text("Active koth has been cancelled!"));
             this.cancel();
         }
 
         this.activeZone = this.cachedZones.get(id);
 
         if (this.activeZone == null) {
-            Bukkit.getLogger().severe("Failed to start KOTH, Zone not found.");
+            Bukkit.broadcast(Component.text("Failed to start KOTH, Zone not found."));
             return;
         }
 
@@ -127,6 +131,7 @@ public class KothManager extends Manager {
         this.lastKothTime = System.currentTimeMillis();
 
         Bukkit.getPluginManager().registerEvents(this.kothListener, this.rosePlugin);
+        Bukkit.broadcast(Component.text("KOTH has started in " + this.activeZone.getId() + "!"));
     }
 
     /**
