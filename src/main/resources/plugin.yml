@@ -4,3 +4,4 @@ version: '@version@'
 api-version: '1.16'
 author: Oribuin
 description: (functioning) koth plugin (ultra rare edition)
+softdepend: [ PlaceholderAPI ]

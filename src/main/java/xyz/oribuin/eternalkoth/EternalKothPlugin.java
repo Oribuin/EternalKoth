@@ -2,6 +2,8 @@ package xyz.oribuin.eternalkoth;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
+import org.bukkit.Bukkit;
+import xyz.oribuin.eternalkoth.hook.KothPlaceholders;
 import xyz.oribuin.eternalkoth.manager.CommandManager;
 import xyz.oribuin.eternalkoth.manager.ConfigurationManager;
 import xyz.oribuin.eternalkoth.manager.KothManager;
@@ -30,7 +32,9 @@ public class EternalKothPlugin extends RosePlugin {
 
     @Override
     public void enable() {
-
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new KothPlaceholders(this).register();
+        }
     }
 
     @Override

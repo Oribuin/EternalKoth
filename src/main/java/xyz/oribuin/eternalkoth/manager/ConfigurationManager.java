@@ -9,6 +9,8 @@ import xyz.oribuin.eternalkoth.EternalKothPlugin;
 public class ConfigurationManager extends AbstractConfigurationManager {
 
     public enum Setting implements RoseSetting {
+        BAR_LENGTH("bar-length", 30, "The length of the progress bar in the %eternalkoth_bar% placeholder"),
+        BAR_CHAR("bar-char", "|", "The character used in the progress bar in the %eternalkoth_bar% placeholder"),
         REMOVE_INVISIBLE("remove-invisible", true, "If true, Players who are invisible inside the zone will have their invisibility removed."),
         AUTO_START("auto-start", true, "If true, The plugin will automatically create a new KOTH Arena after a period of time"),
         AUTO_START_DELAY("auto-start-delay", "1h", "The delay before the plugin will automatically start a new KOTH Arena"),

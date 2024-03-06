@@ -122,8 +122,8 @@ public class KothManager extends Manager {
 
         // Save the unique zone data
         this.config.set(path + "rewards", zone.getRewards());
-        this.config.set(path + "time-to-capture", KothUtils.convertMilliSecondsToHMmSs(zone.getTimeToCapture()));
-        this.config.set(path + "max-duration", KothUtils.convertMilliSecondsToHMmSs(zone.getMaxDuration()));
+        this.config.set(path + "time-to-capture", KothUtils.convertMillis(zone.getTimeToCapture()));
+        this.config.set(path + "max-duration", KothUtils.convertMillis(zone.getMaxDuration()));
 
         // Save the region
         this.config.set(path + "region.world", Objects.requireNonNull(region.getPos1().getWorld()).getName());

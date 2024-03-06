@@ -14,7 +14,7 @@ public final class KothUtils {
      * @param milliseconds Milliseconds
      * @return String in format xh xm xs format
      */
-    public static String convertMilliSecondsToHMmSs(long milliseconds) {
+    public static String convertMillis(long milliseconds) {
         if ((milliseconds / 1000) < 1)
             return "0s";
 
