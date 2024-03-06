@@ -22,9 +22,13 @@ command-cancel-success: 'You have cancelled the current KOTH event.'
 command-cancel-not-active: 'There is no active koth event right now.'
 
 # Create Command
-command-create-description: 'Creates a new KOTH event'
+command-create-description: 'Creates a new KOTH event zone'
 command-create-success: 'You have created a KOTH zone called #00B4DB%zone%&f.'
 command-create-already-exists: 'A KOTH zone with that name already exists.'
+
+# Delete Command
+command-delete-description: 'Deletes a KOTH event zone'
+command-delete-success: 'You have deleted the KOTH zone, #00B4DB%zone%&f.'
 
 # Help Command
 command-help-title: "Available Commands:"

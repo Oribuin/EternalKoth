@@ -26,10 +26,17 @@ public class KothPlaceholders extends PlaceholderExpansion {
         return switch (params.toLowerCase()) {
             case "status" -> activeZone != null ? "Active" : "Inactive";
             case "current" -> activeZone != null ? activeZone.getId() : "None";
-            case "total" -> activeZone != null ? KothUtils.convertMillis(activeZone.getMaxDuration()) : "0";
+            case "total" -> activeZone != null ? KothUtils.convertMillis(activeZone.getTimeToCapture()) : "0";
             case "timeleft" -> KothUtils.convertMillis(activeZone != null ? activeZone.getRemainingTime() : 0);
             case "progress" -> KothUtils.convertMillis(activeZone != null ? activeZone.getProgressTime() : 0);
             case "bar" -> this.getProgressBar(activeZone);
+            case "captain" -> {
+                if (activeZone == null || activeZone.getCaptain() == null || activeZone.getCaptainName() == null) {
+                    yield "None";
+                }
+
+                yield activeZone.getCaptainName();
+            }
 
             default -> null;
         };

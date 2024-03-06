@@ -32,7 +32,7 @@ public final class KothUtils {
         if (seconds > 0)
             sb.append(seconds).append("s");
 
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     /**
@@ -43,9 +43,14 @@ public final class KothUtils {
      */
     public static long parseTime(String time) {
         String[] parts = time.split(" ");
+        if (parts.length == 0)
+            return 0;
+
         long totalSeconds = 0;
 
         for (String part : parts) {
+            if (part.length() < 2)
+                continue;
 
             // get the last character
             char lastChar = part.charAt(part.length() - 1);

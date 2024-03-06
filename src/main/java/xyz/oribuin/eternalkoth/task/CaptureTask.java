@@ -30,6 +30,8 @@ public class CaptureTask extends BukkitRunnable {
         // Capture the zone if the total progress is 100%
         if (zone.isCaptured()) {
             zone.capture();
+
+            this.manager.setActiveZone(null);
         }
 
     }

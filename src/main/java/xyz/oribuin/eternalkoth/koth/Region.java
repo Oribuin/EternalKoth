@@ -56,7 +56,7 @@ public class Region {
             return;
 
         List<Location> cube = this.getCube(pos1, pos2, 1.0);
-        cube.forEach(loc -> viewer.spawnParticle(particle, loc, 1, 0, 0, 0, 0, 0));
+        cube.forEach(loc -> viewer.spawnParticle(particle, loc, 1, 0, 0, 0, 0));
     }
 
     /**

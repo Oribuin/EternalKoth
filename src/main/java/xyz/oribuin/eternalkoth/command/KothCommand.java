@@ -6,6 +6,7 @@ import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import xyz.oribuin.eternalkoth.command.impl.CancelCommand;
 import xyz.oribuin.eternalkoth.command.impl.CreateCommand;
+import xyz.oribuin.eternalkoth.command.impl.DeleteCommand;
 import xyz.oribuin.eternalkoth.command.impl.HelpCommand;
 import xyz.oribuin.eternalkoth.command.impl.ReloadCommand;
 import xyz.oribuin.eternalkoth.command.impl.StartCommand;
@@ -31,6 +32,7 @@ public class KothCommand extends BaseRoseCommand {
                 .requiredSub("command",
                         new CancelCommand(this.rosePlugin),
                         new CreateCommand(this.rosePlugin),
+                        new DeleteCommand(this.rosePlugin),
                         new HelpCommand(this.rosePlugin, this),
                         new ReloadCommand(this.rosePlugin),
                         new StartCommand(this.rosePlugin),

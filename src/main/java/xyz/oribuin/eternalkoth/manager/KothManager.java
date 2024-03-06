@@ -139,6 +139,12 @@ public class KothManager extends Manager {
         this.config.save(this.file);
     }
 
+    public void delete(Zone zone) {
+        this.cachedZones.remove(zone.getId());
+        this.config.set("zones." + zone.getId().toLowerCase(), null);
+        this.config.save(this.file);
+    }
+
     /**
      * Start a koth match with the specified zone id.
      *
@@ -179,6 +185,10 @@ public class KothManager extends Manager {
 
     public Zone getActiveZone() {
         return this.activeZone;
+    }
+
+    public void setActiveZone(Zone activeZone) {
+        this.activeZone = activeZone;
     }
 
     public Map<String, Zone> getCachedZones() {
