@@ -1,7 +1,6 @@
 package xyz.oribuin.eternalkoth.team;
 
 import org.bukkit.entity.Player;
-import xyz.oribuin.eternalkoth.team.impl.BasicTeam;
 import xyz.oribuin.eternalkoth.team.impl.MMOTeam;
 
 import java.util.HashMap;
@@ -13,7 +12,6 @@ public final class TeamRegistry {
     private static final Map<String, Team> TEAMS = new HashMap<>();
 
     static {
-        TEAMS.put("basic", new BasicTeam());
         TEAMS.put("mcmmo", new MMOTeam());
     }
 

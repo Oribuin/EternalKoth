@@ -14,18 +14,4 @@ public interface Team {
      */
     boolean isOnSameTeam(List<Player> players);
 
-    /**
-     * Add a player to the team
-     *
-     * @param player The player to add
-     */
-    void addPlayer(Player player);
-
-    /**
-     * Remove a player from the team
-     *
-     * @param player The player to remove
-     */
-    void removePlayer(Player player);
-
 }

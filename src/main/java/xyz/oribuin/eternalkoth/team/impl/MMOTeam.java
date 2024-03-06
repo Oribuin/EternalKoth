@@ -40,24 +40,4 @@ public class MMOTeam implements Team {
         return true;
     }
 
-    /**
-     * Add a player to the team
-     *
-     * @param player The player to add
-     */
-    @Override
-    public void addPlayer(Player player) {
-        throw new IllegalArgumentException("Cannot add a player to a mcMMO team");
-    }
-
-    /**
-     * Remove a player from the team
-     *
-     * @param player The player to remove
-     */
-    @Override
-    public void removePlayer(Player player) {
-        throw new IllegalArgumentException("Cannot remove a player from a mcMMO team");
-    }
-
 }
