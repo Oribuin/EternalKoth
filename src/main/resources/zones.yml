@@ -1,6 +1,7 @@
 zones:
   main: # The main koth id
     time-to-capture: 5m # The time it takes to capture the KOTH
+    max-duration: 30m # The maximum time the KOTH can be active
     rewards: # The rewards for capturing the KOTH
       - '[BROADCAST] &f%player_name% &7has captured the KOTH!'
       - '[COMMAND] give %player_name% diamond 1'
