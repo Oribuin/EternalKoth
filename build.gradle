@@ -38,8 +38,8 @@ dependencies {
     api "dev.rosewood:rosegarden:${gardenVersion}"
 
     // Decide whether you want to use Spigot or Paper API (Paper is recommended)
-    compileOnly "io.papermc.paper:paper-api:${spigotVersion}-R0.1-SNAPSHOT"
-//    compileOnly "org.spigotmc:spigot-api:${spigotVersion}-R0.1-SNAPSHOT"
+//    compileOnly "io.papermc.paper:paper-api:${spigotVersion}-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot-api:${spigotVersion}-R0.1-SNAPSHOT"
 
     // Plugin Dependencies
     compileOnly ("com.gmail.nossr50.mcMMO:mcMMO:2.1.226-SNAPSHOT") {

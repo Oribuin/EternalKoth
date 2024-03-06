@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import xyz.oribuin.eternalkoth.EternalKothPlugin;
 import xyz.oribuin.eternalkoth.action.ActionType;
@@ -199,7 +200,10 @@ public class Zone {
         Location center = new Location(world, centerX, centerY, centerZ);
         int radius = (int) Math.ceil(this.region.getPos1().distance(this.region.getPos2()) / 2);
 
-        return world.getNearbyPlayers(center, radius).stream().toList();
+        return world.getNearbyEntities(center, radius, radius, radius, entity -> entity.getType() == EntityType.PLAYER)
+                .stream()
+                .map(entity -> (Player) entity)
+                .toList();
     }
 
     public String getId() {
