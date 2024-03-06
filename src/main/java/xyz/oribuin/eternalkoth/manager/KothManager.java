@@ -44,7 +44,7 @@ public class KothManager extends Manager {
         if (!Setting.AUTO_START.getBoolean()) return;
 
         long delay = Duration.ofMillis(KothUtils.parseTime(Setting.AUTO_START_DELAY.getString())).toSeconds();
-         Bukkit.getScheduler().runTaskTimerAsynchronously(this.rosePlugin, () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this.rosePlugin, () -> {
             // Cannot start a game if one is already active
             if (this.activeZone != null) return;
             if (System.currentTimeMillis() - this.lastKothTime < delay * 20) return;
@@ -93,6 +93,7 @@ public class KothManager extends Manager {
             Zone zone = new Zone(key, new Region(pos1, pos2));
             zone.setRewards(section.getStringList(key + ".rewards"));
             zone.setTimeToCapture(KothUtils.parseTime(section.getString(key + ".time-to-capture", "5m")));
+            zone.setMaxDuration(KothUtils.parseTime(section.getString(key + ".max-duration", "30m")));
 
             this.cachedZones.put(key, zone);
         }

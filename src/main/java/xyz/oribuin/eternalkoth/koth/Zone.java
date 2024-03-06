@@ -1,7 +1,6 @@
 package xyz.oribuin.eternalkoth.koth;
 
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -22,6 +21,7 @@ public class Zone {
     private Region region;
     private List<String> rewards;
     private long timeToCapture; // The time it takes to fully capture the zone
+    private long maxDuration; // The maximum time the zone will be active before its shutdown
 
     // these all need to be mutable :(
     private long startTime;
@@ -49,13 +49,13 @@ public class Zone {
      */
     public void capture() {
         if (!this.isCaptured()) return;
-        Player captain = Bukkit.getPlayer(this.captain);
 
+        Player captain = Bukkit.getPlayer(this.captain);
         if (captain == null) return;
 
         this.paused = true;
 
-        // Give rewards synchronously to the players, spigot doesnt like asynchronous command execution
+        // Give rewards synchronously to the players, spigot doesn't like asynchronous command execution
         Bukkit.getScheduler().runTask(EternalKothPlugin.get(), () -> ActionType.run(
                 captain,
                 this.rewards,
@@ -81,7 +81,7 @@ public class Zone {
      *
      * @return The Capture Percentage
      */
-    public double getProgress() {
+    public double getProgressPercent() {
         if (this.startTime == 0L) return 0.0;
         if (this.captain == null) return 0.0;
         if (this.paused) return 0.0;
@@ -95,13 +95,22 @@ public class Zone {
      *
      * @return The remaining time to capture the zone
      */
-    public long getRemainingTime() {
+    public long getProgressTime() {
         if (this.startTime == 0L) return 0L;
         if (this.captain == null) return 0L;
         if (this.paused) return 0L;
 
         long timePassed = System.currentTimeMillis() - this.startOfCapture;
         return this.timeToCapture - timePassed;
+    }
+
+    /**
+     * Get the remaining time the zone will be active
+     *
+     * @return The remaining time the zone will be active
+     */
+    public long getRemainingTime() {
+        return this.maxDuration - (System.currentTimeMillis() - this.startTime);
     }
 
     /**
@@ -251,5 +260,22 @@ public class Zone {
 
     public void setPaused(boolean paused) {
         this.paused = paused;
+    }
+
+    public long getMaxDuration() {
+        return maxDuration;
+    }
+
+    public void setMaxDuration(long maxDuration) {
+        this.maxDuration = maxDuration;
+    }
+
+
+    public long getStartOfCapture() {
+        return startOfCapture;
+    }
+
+    public void setStartOfCapture(long startOfCapture) {
+        this.startOfCapture = startOfCapture;
     }
 }

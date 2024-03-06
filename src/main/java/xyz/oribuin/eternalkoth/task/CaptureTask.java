@@ -21,9 +21,17 @@ public class CaptureTask extends BukkitRunnable {
         Zone zone = this.manager.getActiveZone();
         if (zone == null) return;
 
+        // Cancel the zone if the time to capture is up
+        if (zone.getRemainingTime() <= 0) {
+            manager.cancel();
+            return;
+        }
+
+        // Capture the zone if the total progress is 100%
         if (zone.isCaptured()) {
             zone.capture();
         }
+
     }
 
 }
