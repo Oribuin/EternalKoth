@@ -7,31 +7,31 @@ import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
+import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import xyz.oribuin.eternalkoth.command.argument.ZoneArgumentHandler;
 import xyz.oribuin.eternalkoth.koth.Zone;
-import xyz.oribuin.eternalkoth.manager.KothManager;
 import xyz.oribuin.eternalkoth.manager.LocaleManager;
 
-public class StartCommand extends BaseRoseCommand {
+public class ViewCommand extends BaseRoseCommand {
 
-    public StartCommand(RosePlugin rosePlugin) {
+    public ViewCommand(RosePlugin rosePlugin) {
         super(rosePlugin);
     }
 
     @RoseExecutable
     public void execute(CommandContext context) {
+        Player player = (Player) context.getSender();
+
         LocaleManager locale = this.rosePlugin.getManager(LocaleManager.class);
-        KothManager manager = this.rosePlugin.getManager(KothManager.class);
         Zone zone = context.get("zone");
 
-        // Make sure there is no active zone
-        if (manager.getActiveZone() != null) {
-            locale.sendMessage(context.getSender(), "command-start-already-active");
-            return;
-        }
+        BukkitTask task = Bukkit.getScheduler().runTaskTimerAsynchronously(this.rosePlugin, () -> zone.getRegion().show(player, Particle.CRIT), 0L, 5L);
+        Bukkit.getScheduler().runTaskLater(this.rosePlugin, task::cancel, 3 * 20L);
 
-        manager.start(zone.getId());
-        locale.sendMessage(context.getSender(), "command-start-success", StringPlaceholders.of("zone", zone.getId()));
+        locale.sendMessage(context.getSender(), "command-view-success", StringPlaceholders.of("zone", zone.getId()));
     }
 
     @Override

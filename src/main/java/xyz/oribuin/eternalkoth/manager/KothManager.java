@@ -23,10 +23,13 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class KothManager extends Manager {
 
     private final Map<String, Zone> cachedZones = new HashMap<>(); // These are not the active zones but data for the configs.
+    private File file;
+    private CommentedFileConfiguration config;
 
     private Zone activeZone;
     private BukkitTask kothTask;
@@ -64,9 +67,9 @@ public class KothManager extends Manager {
         this.cachedZones.clear();
 
         // Load the zones from the config
-        File file = FileUtils.createFile(this.rosePlugin, "zones.yml");
-        CommentedFileConfiguration config = CommentedFileConfiguration.loadConfiguration(file);
-        CommentedConfigurationSection section = config.getConfigurationSection("zones");
+        this.file = FileUtils.createFile(this.rosePlugin, "zones.yml");
+        this.config = CommentedFileConfiguration.loadConfiguration(this.file);
+        CommentedConfigurationSection section = this.config.getConfigurationSection("zones");
         if (section == null) return;
 
         for (String key : section.getKeys(false)) {
@@ -102,6 +105,38 @@ public class KothManager extends Manager {
     @Override
     public void disable() {
         Bukkit.getScheduler().cancelTasks(this.rosePlugin);
+    }
+
+    /**
+     * Save the zone to the zones.yml file.
+     *
+     * @param zone The zone to save.
+     */
+    public void save(Zone zone) {
+        this.cachedZones.put(zone.getId(), zone);
+
+        String path = "zones." + zone.getId().toLowerCase() + ".";
+
+        Region region = zone.getRegion();
+        if (region == null || region.getPos1() == null || region.getPos2() == null) return;
+
+        // Save the unique zone data
+        this.config.set(path + "rewards", zone.getRewards());
+        this.config.set(path + "time-to-capture", KothUtils.convertMilliSecondsToHMmSs(zone.getTimeToCapture()));
+        this.config.set(path + "max-duration", KothUtils.convertMilliSecondsToHMmSs(zone.getMaxDuration()));
+
+        // Save the region
+        this.config.set(path + "region.world", Objects.requireNonNull(region.getPos1().getWorld()).getName());
+        this.config.set(path + "region.pos1.x", region.getPos1().getX());
+        this.config.set(path + "region.pos1.y", region.getPos1().getY());
+        this.config.set(path + "region.pos1.z", region.getPos1().getZ());
+
+        this.config.set(path + "region.pos2.x", region.getPos2().getX());
+        this.config.set(path + "region.pos2.y", region.getPos2().getY());
+        this.config.set(path + "region.pos2.z", region.getPos2().getZ());
+
+        // Save the whole config
+        this.config.save(this.file);
     }
 
     /**

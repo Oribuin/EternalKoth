@@ -1,33 +1,50 @@
 # Plugin Message Prefix
-prefix: '&7[<g:#8A2387:#E94057:#F27121>{{PLUGIN_NAME}}&7] '
+prefix: "<g:#00B4DB:#0083B0>&lEternalKOTH &8| &f"
 
 # Generic Command Messages
-no-permission: '&cYou don''t have permission for that!'
-only-player: '&cThis command can only be executed by a player.'
-unknown-command: '&cUnknown command, use &b/%cmd% help &cfor more info.'
+no-permission: "You do not have permission to do that!"
+only-player: "This command can only be executed by a player!"
+unknown-command: "Unknown command, use #00B4DB/%cmd%&f help for more info"
 unknown-command-error: '&cAn unknown error occurred; details have been printed to console. Please contact a server administrator.'
-invalid-subcommand: '&cInvalid subcommand.'
-invalid-argument: '&cInvalid argument: %message%.'
-invalid-argument-null: '&cInvalid argument: %name% was null.'
-missing-arguments: '&cMissing arguments, &b%amount% &crequired.'
-missing-arguments-extra: '&cMissing arguments, &b%amount%+ &crequired.'
+invalid-subcommand: 'Invalid subcommand.'
+invalid-argument: 'Invalid argument: %message%.'
+invalid-argument-null: 'Invalid argument: %name% was null.'
+missing-arguments: 'Missing arguments, &b%amount% &crequired.'
+missing-arguments-extra: 'Missing arguments, &b%amount%+ &crequired.'
 
 # Base Command Message
-base-command-color: '&e'
-base-command-help: '&eUse &b/%cmd% help &efor command information.'
+base-command-color: '&7'
+base-command-help: '&7Use #00B4DB/%cmd% help &7for command information.'
+
+# Cancel Command
+command-cancel-description: 'Cancels the current KOTH event'
+command-cancel-success: 'You have cancelled the current KOTH event.'
+command-cancel-not-active: 'There is no active koth event right now.'
+
+# Create Command
+command-create-description: 'Creates a new KOTH event'
+command-create-success: 'You have created a KOTH zone called #00B4DB%zone%&f.'
+command-create-already-exists: 'A KOTH zone with that name already exists.'
 
 # Help Command
-command-help-description: 'Displays the help menu... You have arrived'
-command-help-title: '&eAvailable Commands:'
-command-help-list-description: '&8 - &d/%cmd% %subcmd% %args% &7- %desc%'
-command-help-list-description-no-args: '&8 - &d/%cmd% %subcmd% &7- %desc%'
+command-help-title: "Available Commands:"
+command-help-description: "Displays the help menu"
+command-help-list-description: " &8- #00B4DB/%cmd% %subcmd% %args% &7- &f%desc%"
+command-help-list-description-no-args: " &8- #00B4DB/%cmd% %subcmd% &7- &f%desc%"
 
 # Reload Command
-command-reload-description: 'Reloads the plugin'
-command-reload-reloaded: '&eConfiguration and locale files were reloaded.'
+command-reload-description: "Reloads the plugin."
+command-reload-reloaded: "Configuration and locale files were reloaded"
 
-# Hello Command
-command-hello-description: 'Say hello to someone.'
+# Start Command
+command-start-description: 'Start a koth event in a zone'
+command-start-success: 'You have started a KOTH event in the zone #00B4DB%zone%&f.'
+command-start-already-active: 'There is already an active KOTH event.'
+
+# Command View
+command-view-description: 'View bounds of any KOTH zone'
+command-view-success: 'You have viewed the bounds of the KOTH zone #00B4DB%zone%&f.'
 
 # Argument Handler Error Messages
-argument-handler-material: 'Material [%input%] does not exist'
+argument-handler-location: '[%input%] is not a valid location. It should be in the format x,y,z,world.'
+argument-handler-zone: '[%input%] is not a valid zone.'
