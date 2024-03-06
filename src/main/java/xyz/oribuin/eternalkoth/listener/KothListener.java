@@ -36,7 +36,7 @@ public class KothListener implements Listener {
         boolean wasInsideZone = zone.getRegion().isInside(from);
         boolean isInsideZone = zone.getRegion().isInside(to);
 
-        // If the player was in a zone and nolonger is, they left the zone
+        // If the player was in a zone and no longer is, they left the zone
         if (wasInsideZone && !isInsideZone) {
             zone.leave(event.getPlayer());
             return;
@@ -46,8 +46,9 @@ public class KothListener implements Listener {
         if (isInsideZone) {
 
             // Remove invisibility if the setting is enabled
-            if (Setting.REMOVE_INVISIBLE.getBoolean() && event.getPlayer().hasPotionEffect(PotionEffectType.INVISIBILITY))
+            if (Setting.REMOVE_INVISIBLE.getBoolean() && event.getPlayer().hasPotionEffect(PotionEffectType.INVISIBILITY)) {
                 event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+            }
 
             zone.enter(event.getPlayer());
         }

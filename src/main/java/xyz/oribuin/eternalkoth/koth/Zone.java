@@ -105,7 +105,7 @@ public class Zone {
     }
 
     /**
-     * Mark a player as part of the capturing team and if theres only one player, make them the captain
+     * Mark a player as part of the capturing team and if there's only one player, make them the captain
      * This function will fire once the player has already entered the zone, inside size would be before size + 1
      *
      * @param player The player who has en
@@ -113,11 +113,8 @@ public class Zone {
     public void enter(Player player) {
         List<Player> inside = this.getPlayersInside();
 
-        System.out.println("Size: " + inside.size() + " Captain: " + this.captain + " Player: " + player.getUniqueId());
-
         // All players are on the same team so it doesnt matter
         if (TeamRegistry.isOnSameTeam(inside) && this.captain != null) {
-            Bukkit.broadcast(Component.text("All players are on the same team with a captain defined, we are not doing anything"));
             return;
         }
 
@@ -126,7 +123,6 @@ public class Zone {
             this.captain = player.getUniqueId();
             this.paused = false;
             this.startOfCapture = System.currentTimeMillis();
-            Bukkit.broadcast(Component.text(player.getName() + " is now the captain of the zone"));
             return;
         }
 
@@ -137,7 +133,6 @@ public class Zone {
             this.paused = true;
             this.startOfCapture = 0;
             this.captain = null;
-            Bukkit.broadcast(Component.text("The zone has been paused"));
         }
     }
 
@@ -154,7 +149,6 @@ public class Zone {
         if (this.captain != null && this.captain.equals(player.getUniqueId())) {
             this.captain = null;
             this.startOfCapture = 0;
-            Bukkit.broadcast(Component.text("There is no captain inside the zone"));
             return;
         }
 
@@ -163,8 +157,6 @@ public class Zone {
             this.captain = null;
             this.paused = false;
             this.startOfCapture = 0;
-
-            Bukkit.broadcast(Component.text("No one is inside the zone, we're going to reset everything"));
             return;
         }
 
@@ -173,8 +165,6 @@ public class Zone {
             this.captain = inside.get(0).getUniqueId();
             this.paused = false;
             this.startOfCapture = System.currentTimeMillis();
-
-            Bukkit.broadcast(Component.text("Captain has left the zone, we're now going to overwrite the captain"));
         }
     }
 

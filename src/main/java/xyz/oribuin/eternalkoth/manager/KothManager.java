@@ -4,7 +4,6 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.config.CommentedConfigurationSection;
 import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.manager.Manager;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -45,12 +44,10 @@ public class KothManager extends Manager {
         if (!Setting.AUTO_START.getBoolean()) return;
 
         long delay = Duration.ofMillis(KothUtils.parseTime(Setting.AUTO_START_DELAY.getString())).toSeconds();
-        BukkitTask task = Bukkit.getScheduler().runTaskTimerAsynchronously(this.rosePlugin, () -> {
+         Bukkit.getScheduler().runTaskTimerAsynchronously(this.rosePlugin, () -> {
             // Cannot start a game if one is already active
             if (this.activeZone != null) return;
             if (System.currentTimeMillis() - this.lastKothTime < delay * 20) return;
-
-            System.out.println("Starting KOTH");
 
             // Start a new KOTH
             Zone zone = new ArrayList<>(this.cachedZones.values()).get(((int) (Math.random() * this.cachedZones.size())));
@@ -112,17 +109,12 @@ public class KothManager extends Manager {
      * @param id The id of the zone to start the koth match.
      */
     public void start(String id) {
-        if (this.activeZone != null) {
-            Bukkit.broadcast(Component.text("Active koth has been cancelled!"));
-            this.cancel();
-        }
+        // cancel any existing koth matches
+        if (this.activeZone != null) this.cancel();
 
+        // Create a duplicate instance of the zone from the cache
         this.activeZone = this.cachedZones.get(id);
-
-        if (this.activeZone == null) {
-            Bukkit.broadcast(Component.text("Failed to start KOTH, Zone not found."));
-            return;
-        }
+        if (this.activeZone == null) return;
 
         // Start the KOTH
         this.activeZone.setStartTime(System.currentTimeMillis());
@@ -131,7 +123,6 @@ public class KothManager extends Manager {
         this.lastKothTime = System.currentTimeMillis();
 
         Bukkit.getPluginManager().registerEvents(this.kothListener, this.rosePlugin);
-        Bukkit.broadcast(Component.text("KOTH has started in " + this.activeZone.getId() + "!"));
     }
 
     /**
@@ -141,11 +132,7 @@ public class KothManager extends Manager {
      * @see CaptureTask
      */
     public void cancel() {
-        if (this.activeZone == null) {
-            Bukkit.getLogger().severe("Failed to stop KOTH, KOTH not active.");
-            return;
-        }
-
+        if (this.activeZone == null) return;
         if (this.kothListener != null) HandlerList.unregisterAll(this.kothListener);
         if (this.kothTask != null) this.kothTask.cancel();
 
