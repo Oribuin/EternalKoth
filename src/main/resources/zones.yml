@@ -1,0 +1,16 @@
+zones:
+  main: # The main koth id
+    time-to-capture: 5m # The time it takes to capture the KOTH
+    rewards: # The rewards for capturing the KOTH
+      - '[BROADCAST] &f%player_name% &7has captured the KOTH!'
+      - '[COMMAND] give %player_name% diamond 1'
+    region: # The region of the KOTH
+      world: world
+      pos1:
+        x: -10
+        y: -10
+        z: -10
+      pos2:
+        x: 10
+        y: 10
+        z: 10
