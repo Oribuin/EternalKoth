@@ -8,6 +8,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import xyz.oribuin.eternalkoth.EternalKothPlugin;
 import xyz.oribuin.eternalkoth.action.ActionType;
+import xyz.oribuin.eternalkoth.manager.KothManager;
 import xyz.oribuin.eternalkoth.team.TeamRegistry;
 
 import java.time.Duration;
@@ -20,8 +21,8 @@ public class Zone {
     private final String id;
     private Region region;
     private List<String> rewards;
-    private long timeToCapture; // The time it takes to fully capture the zone
-    private long maxDuration; // The maximum time the zone will be active before its shutdown
+    private Duration timeToCapture; // The time it takes to fully capture the zone
+    private Duration maxDuration; // The maximum time the zone will be active before its shutdown
 
     // Mutable Data, Not saved to the config
     private long startTime;
@@ -41,8 +42,8 @@ public class Zone {
         this.region = region;
         this.rewards = new ArrayList<>();
         this.startTime = 0L;
-        this.timeToCapture = Duration.ofMinutes(1).toMillis();
-        this.maxDuration = Duration.ofMinutes(5).toMillis();
+        this.timeToCapture = Duration.ofMinutes(1);
+        this.maxDuration = Duration.ofMinutes(5);
     }
 
     /**
@@ -55,7 +56,10 @@ public class Zone {
         Player captain = Bukkit.getPlayer(this.captain);
         if (captain == null) return;
 
-        this.pauseTime = System.currentTimeMillis();
+        // Cancel the current koth task
+        EternalKothPlugin.get()
+                .getManager(KothManager.class)
+                .cancel();
 
         // Give rewards synchronously to the players, spigot doesn't like asynchronous command execution
         Bukkit.getScheduler().runTask(EternalKothPlugin.get(), () -> ActionType.run(
@@ -65,17 +69,18 @@ public class Zone {
         ));
     }
 
+
     /**
      * Check if the zone has been started
      *
      * @return True if the zone has been started
      */
     public boolean isCaptured() {
-        if (this.startTime == 0L) return false;
+        if (this.startTime <= 0L || this.startOfCapture <= 0) return false;
         if (this.captain == null) return false;
         if (this.isPaused()) return false;
 
-        return System.currentTimeMillis() - this.startOfCapture >= this.timeToCapture;
+        return this.startOfCapture + this.timeToCapture.toMillis() <= System.currentTimeMillis();
     }
 
     /**
@@ -89,11 +94,11 @@ public class Zone {
 
         if (this.isPaused()) {
             long timePassed = this.pauseTime - this.startOfCapture;
-            return (double) timePassed / (double) this.timeToCapture;
+            return (double) timePassed / (double) this.timeToCapture.toMillis();
         }
 
         long timePassed = System.currentTimeMillis() - this.startOfCapture;
-        return (double) timePassed / (double) this.timeToCapture;
+        return (double) timePassed / (double) this.timeToCapture.toMillis();
     }
 
     /**
@@ -101,17 +106,17 @@ public class Zone {
      *
      * @return The remaining time to capture the zone
      */
-    public long getProgressTime() {
+    public long getCaptureElapsed() {
         if (this.startTime == 0L) return 0L;
-        if (this.captain == null) return 0L;
+        if (this.startOfCapture == 0L) return 0L;
 
         if (this.isPaused()) {
-            long timePassed = this.pauseTime - this.startOfCapture;
-            return this.timeToCapture - timePassed;
+            System.out.println("[Paused] Result: " + (this.timeToCapture.toMillis() - (this.pauseTime - this.startOfCapture)));
+            return this.timeToCapture.toMillis() - (this.pauseTime - this.startOfCapture);
         }
 
-        long timePassed = System.currentTimeMillis() - this.startOfCapture;
-        return this.timeToCapture - timePassed;
+        // time since the zone started capturing
+        return System.currentTimeMillis() - this.startOfCapture;
     }
 
     /**
@@ -120,7 +125,7 @@ public class Zone {
      * @return The remaining time the zone will be active
      */
     public long getRemainingTime() {
-        return this.maxDuration - (System.currentTimeMillis() - this.startTime);
+        return this.maxDuration.toMillis() - (System.currentTimeMillis() - this.startTime);
     }
 
     /**
@@ -134,14 +139,16 @@ public class Zone {
 
         // All players are on the same team so it doesnt matter
         if (TeamRegistry.isOnSameTeam(inside) && this.captain != null) {
+            System.out.println(player.getName() + " is on the same team as the captain");
             return;
         }
 
         // This is the first player inside the region, they are now the captain
         if (inside.size() <= 1 && this.captain == null) {
+            System.out.println(player.getName() + " is now the captain of the zone");
             this.captain = player.getUniqueId();
             this.captainName = player.getName();
-            this.startOfCapture += this.pauseTime - this.startOfCapture;
+            this.startOfCapture = this.startOfCapture == 0 ? System.currentTimeMillis() : this.startOfCapture + (System.currentTimeMillis() - this.pauseTime);
             return;
         }
 
@@ -149,6 +156,7 @@ public class Zone {
         // so we are pausing the capture and resetting the timer
         // wait for these players to be holding the zone
         if (inside.size() > 1) {
+            System.out.println("Pausing Capture");
             this.pauseTime = System.currentTimeMillis();
         }
     }
@@ -162,8 +170,9 @@ public class Zone {
     public void leave(Player player) {
         List<Player> inside = this.getPlayersInside();
 
-        // The captain has left the zone, we're going to reset the zone now
-        if (this.captain != null && this.captain.equals(player.getUniqueId())) {
+        // The captain has left the zone or the zone is empty
+        if ((this.captain != null && this.captain.equals(player.getUniqueId())) || inside.isEmpty()) {
+            System.out.println(this.captainName + ", The captain has left the zone");
             this.captain = null;
             this.captainName = null;
             this.startOfCapture = 0;
@@ -171,18 +180,10 @@ public class Zone {
             return;
         }
 
-        // Player has left the zone, we're going to reset the zone now
-        if (inside.isEmpty()) {
-            this.captain = null;
-            this.captainName = null;
-            this.pauseTime = 0;
-            this.startOfCapture = 0;
-            return;
-        }
-
-        // The player who left was the last player inside the zone
-        if (this.captain == null) {
+        // The captain has left the zone but theres someone else
+        if (this.captain == null && inside.size() > 1) {
             Player newCaptain = inside.get(0);
+            System.out.println("Changing the captain of the zone to " + inside.get(0).getName());
 
             this.captain = newCaptain.getUniqueId();
             this.captainName = newCaptain.getName();
@@ -239,48 +240,28 @@ public class Zone {
         this.rewards = rewards;
     }
 
+    public Duration getTimeToCapture() {
+        return timeToCapture;
+    }
+
+    public void setTimeToCapture(Duration timeToCapture) {
+        this.timeToCapture = timeToCapture;
+    }
+
+    public Duration getMaxDuration() {
+        return maxDuration;
+    }
+
+    public void setMaxDuration(Duration maxDuration) {
+        this.maxDuration = maxDuration;
+    }
+
     public long getStartTime() {
         return startTime;
     }
 
     public void setStartTime(long startTime) {
         this.startTime = startTime;
-    }
-
-    public long getTimeToCapture() {
-        return timeToCapture;
-    }
-
-    public void setTimeToCapture(long timeToCapture) {
-        this.timeToCapture = timeToCapture;
-    }
-
-    public long getLastCaptureTime() {
-        return startOfCapture;
-    }
-
-    public void setLastCaptureTime(long startOfCapture) {
-        this.startOfCapture = startOfCapture;
-    }
-
-    public UUID getCaptain() {
-        return captain;
-    }
-
-    public void setCaptain(UUID captain) {
-        this.captain = captain;
-    }
-
-    public boolean isPaused() {
-        return this.pauseTime != 0;
-    }
-
-    public long getMaxDuration() {
-        return maxDuration;
-    }
-
-    public void setMaxDuration(long maxDuration) {
-        this.maxDuration = maxDuration;
     }
 
     public long getStartOfCapture() {
@@ -291,8 +272,31 @@ public class Zone {
         this.startOfCapture = startOfCapture;
     }
 
+    public boolean isPaused() {
+        return this.pauseTime > 0;
+    }
+
+    public long getPauseTime() {
+        return pauseTime;
+    }
+
+    public void setPauseTime(long pauseTime) {
+        this.pauseTime = pauseTime;
+    }
+
+    public UUID getCaptain() {
+        return captain;
+    }
+
+    public void setCaptain(UUID captain) {
+        this.captain = captain;
+    }
+
     public String getCaptainName() {
         return captainName;
     }
 
+    public void setCaptainName(String captainName) {
+        this.captainName = captainName;
+    }
 }

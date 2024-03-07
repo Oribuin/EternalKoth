@@ -26,9 +26,10 @@ public class KothPlaceholders extends PlaceholderExpansion {
         return switch (params.toLowerCase()) {
             case "status" -> activeZone != null ? "Active" : "Inactive";
             case "current" -> activeZone != null ? activeZone.getId() : "None";
-            case "total" -> activeZone != null ? KothUtils.convertMillis(activeZone.getTimeToCapture()) : "0";
+            case "total" -> KothUtils.convertMillis(activeZone != null ? activeZone.getTimeToCapture().toMillis() : 0);
+            case "duration" -> KothUtils.convertMillis(activeZone != null ? activeZone.getMaxDuration().toMillis() : 0);
             case "timeleft" -> KothUtils.convertMillis(activeZone != null ? activeZone.getRemainingTime() : 0);
-            case "progress" -> KothUtils.convertMillis(activeZone != null ? activeZone.getProgressTime() : 0);
+            case "progress" -> KothUtils.convertMillis(activeZone != null ? activeZone.getCaptureElapsed() : 0);
             case "bar" -> this.getProgressBar(activeZone);
             case "captain" -> {
                 if (activeZone == null || activeZone.getCaptain() == null || activeZone.getCaptainName() == null) {
@@ -55,6 +56,8 @@ public class KothPlaceholders extends PlaceholderExpansion {
         if (zone == null) return HexUtils.colorify("&c" + barChar.repeat(barLength));
         double progressPercent = zone.getProgressPercent();
         int progress = (int) (progressPercent * barLength);
+
+        if (progress > barLength) progress = barLength;
 
         return HexUtils.colorify("&a" + barChar.repeat(progress) + "&c" + barChar.repeat(barLength - progress));
     }

@@ -19,7 +19,6 @@ import xyz.oribuin.eternalkoth.util.FileUtils;
 import xyz.oribuin.eternalkoth.util.KothUtils;
 
 import java.io.File;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class KothManager extends Manager {
 
         if (!Setting.AUTO_START.getBoolean()) return;
 
-        long delay = Duration.ofMillis(KothUtils.parseTime(Setting.AUTO_START_DELAY.getString())).toSeconds();
+        long delay = KothUtils.parseDuration(Setting.AUTO_START_DELAY.getString()).toSeconds();
         Bukkit.getScheduler().runTaskTimerAsynchronously(this.rosePlugin, () -> {
             // Cannot start a game if one is already active
             if (this.activeZone != null) return;
@@ -95,8 +94,8 @@ public class KothManager extends Manager {
 
             Zone zone = new Zone(key, new Region(pos1, pos2));
             zone.setRewards(section.getStringList(key + ".rewards"));
-            zone.setTimeToCapture(KothUtils.parseTime(section.getString(key + ".time-to-capture", "5m")));
-            zone.setMaxDuration(KothUtils.parseTime(section.getString(key + ".max-duration", "30m")));
+            zone.setTimeToCapture(KothUtils.parseDuration(section.getString(key + ".time-to-capture", "5m")));
+            zone.setMaxDuration(KothUtils.parseDuration(section.getString(key + ".max-duration", "30m")));
 
             this.cachedZones.put(key, zone);
         }
@@ -122,8 +121,8 @@ public class KothManager extends Manager {
 
         // Save the unique zone data
         this.config.set(path + "rewards", zone.getRewards());
-        this.config.set(path + "time-to-capture", KothUtils.convertMillis(zone.getTimeToCapture()));
-        this.config.set(path + "max-duration", KothUtils.convertMillis(zone.getMaxDuration()));
+        this.config.set(path + "time-to-capture", KothUtils.convertMillis(zone.getTimeToCapture().toMillis()));
+        this.config.set(path + "max-duration", KothUtils.convertMillis(zone.getMaxDuration().toMillis()));
 
         // Save the region
         this.config.set(path + "region.world", Objects.requireNonNull(region.getPos1().getWorld()).getName());
@@ -155,14 +154,16 @@ public class KothManager extends Manager {
         if (this.activeZone != null) this.cancel();
 
         // Create a duplicate instance of the zone from the cache
-        this.activeZone = this.cachedZones.get(id);
-        if (this.activeZone == null) return;
+        Zone clone = this.cachedZones.get(id);
+        if (clone == null) return;
+
+        clone.setStartTime(System.currentTimeMillis());
 
         // Start the KOTH
-        this.activeZone.setStartTime(System.currentTimeMillis());
         this.kothListener = new KothListener(this.rosePlugin);
         this.kothTask = new CaptureTask(this.rosePlugin).runTaskTimerAsynchronously(this.rosePlugin, 0L, 1);
         this.lastKothTime = System.currentTimeMillis();
+        this.activeZone = clone;
 
         Bukkit.getPluginManager().registerEvents(this.kothListener, this.rosePlugin);
     }

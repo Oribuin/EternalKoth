@@ -1,5 +1,6 @@
 package xyz.oribuin.eternalkoth.util;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public final class KothUtils {
@@ -36,45 +37,32 @@ public final class KothUtils {
     }
 
     /**
-     * Parse a time string into milliseconds
+     * Convert a duration to a time string
      *
-     * @param time The time string
-     * @return The time in milliseconds
+     * @param text The duration string
+     * @return The duration
      */
-    public static long parseTime(String time) {
-        String[] parts = time.split(" ");
-        if (parts.length == 0)
-            return 0;
+    public static Duration parseDuration(String text) {
+        if (text.length() < 2)
+            return Duration.ZERO;
 
-        long totalSeconds = 0;
+        char lastChar = text.charAt(text.length() - 1);
+        String num = text.substring(0, text.length() - 1);
 
-        for (String part : parts) {
-            if (part.length() < 2)
-                continue;
-
-            // get the last character
-            char lastChar = part.charAt(part.length() - 1);
-            String num = part.substring(0, part.length() - 1);
-            if (num.isEmpty())
-                continue;
-
-            int amount;
-            try {
-                amount = Integer.parseInt(num);
-            } catch (NumberFormatException e) {
-                continue;
-            }
-
-            switch (lastChar) {
-                case 'w' -> totalSeconds += amount * 604800L;
-                case 'd' -> totalSeconds += amount * 86400L;
-                case 'h' -> totalSeconds += amount * 3600L;
-                case 'm' -> totalSeconds += amount * 60L;
-                case 's' -> totalSeconds += amount;
-            }
+        long amount;
+        try {
+            amount = Long.parseLong(num);
+        } catch (NumberFormatException e) {
+            return Duration.ZERO;
         }
 
-        return totalSeconds * 1000;
+        return switch (lastChar) {
+            case 'd' -> Duration.ofDays(amount);
+            case 'h' -> Duration.ofHours(amount);
+            case 'm' -> Duration.ofMinutes(amount);
+            case 's' -> Duration.ofSeconds(amount);
+            default -> Duration.ZERO;
+        };
     }
 
 }
