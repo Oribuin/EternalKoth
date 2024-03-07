@@ -79,8 +79,8 @@ public class Zone {
         if (this.startTime <= 0L || this.startOfCapture <= 0) return false;
         if (this.captain == null) return false;
         if (this.isPaused()) return false;
-
-        return this.startOfCapture + this.timeToCapture.toMillis() <= System.currentTimeMillis();
+        
+        return this.startOfCapture + this.timeToCapture.toMillis() < System.currentTimeMillis();
     }
 
     /**
@@ -111,7 +111,6 @@ public class Zone {
         if (this.startOfCapture == 0L) return 0L;
 
         if (this.isPaused()) {
-            System.out.println("[Paused] Result: " + (this.timeToCapture.toMillis() - (this.pauseTime - this.startOfCapture)));
             return this.timeToCapture.toMillis() - (this.pauseTime - this.startOfCapture);
         }
 

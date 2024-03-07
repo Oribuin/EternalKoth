@@ -46,8 +46,10 @@ public final class KothUtils {
         if (text.length() < 2)
             return Duration.ZERO;
 
-        char lastChar = text.charAt(text.length() - 1);
-        String num = text.substring(0, text.length() - 1);
+        String content = text.toLowerCase().trim();
+
+        char lastChar = content.charAt(content.length() - 1);
+        String num = content.substring(0, content.length() - 1);
 
         long amount;
         try {

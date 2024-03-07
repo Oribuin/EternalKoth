@@ -77,4 +77,9 @@ public class KothPlaceholders extends PlaceholderExpansion {
         return "1.0.0";
     }
 
+    @Override
+    public boolean persist() {
+        return true;
+    }
+
 }
