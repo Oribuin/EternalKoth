@@ -79,7 +79,7 @@ public class Zone {
         if (this.startTime <= 0L || this.startOfCapture <= 0) return false;
         if (this.captain == null) return false;
         if (this.isPaused()) return false;
-        
+
         return this.startOfCapture + this.timeToCapture.toMillis() < System.currentTimeMillis();
     }
 
@@ -93,8 +93,7 @@ public class Zone {
         if (this.captain == null) return 0.0;
 
         if (this.isPaused()) {
-            long timePassed = this.pauseTime - this.startOfCapture;
-            return (double) timePassed / (double) this.timeToCapture.toMillis();
+            return (this.pauseTime - this.startOfCapture) / (double) this.timeToCapture.toMillis();
         }
 
         long timePassed = System.currentTimeMillis() - this.startOfCapture;
@@ -111,7 +110,7 @@ public class Zone {
         if (this.startOfCapture == 0L) return 0L;
 
         if (this.isPaused()) {
-            return this.timeToCapture.toMillis() - (this.pauseTime - this.startOfCapture);
+            return Math.max(0, this.pauseTime - this.startOfCapture);
         }
 
         // time since the zone started capturing
@@ -147,7 +146,8 @@ public class Zone {
             System.out.println(player.getName() + " is now the captain of the zone");
             this.captain = player.getUniqueId();
             this.captainName = player.getName();
-            this.startOfCapture = this.startOfCapture == 0 ? System.currentTimeMillis() : this.startOfCapture + (System.currentTimeMillis() - this.pauseTime);
+            this.startOfCapture = System.currentTimeMillis();
+            this.pauseTime = 0L;
             return;
         }
 
@@ -189,6 +189,11 @@ public class Zone {
             this.pauseTime = 0L;
             this.startOfCapture = System.currentTimeMillis();
         }
+
+        // Unpause the zone
+        this.startOfCapture += System.currentTimeMillis() - this.pauseTime;
+        this.pauseTime = 0L;
+        System.out.println("unpausing the zone");
     }
 
     /**
@@ -217,6 +222,34 @@ public class Zone {
                 .stream()
                 .map(entity -> (Player) entity)
                 .toList();
+    }
+
+    /**
+     * Create an empty instance of the zone
+     *
+     * @param zone The zone to copy
+     * @return A new instance of the zone
+     */
+    public static Zone from(Zone zone) {
+        if (zone == null) return null;
+
+        Zone newZone = new Zone(zone.id, zone.region);
+        newZone.setRewards(zone.rewards);
+        newZone.setTimeToCapture(zone.timeToCapture);
+        newZone.setMaxDuration(zone.maxDuration);
+        return newZone;
+    }
+
+    @Override
+    public String toString() {
+        return "Zone{" +
+               "id='" + id + '\'' +
+               ", startTime=" + startTime +
+               ", startOfCapture=" + startOfCapture +
+               ", pauseTime=" + pauseTime +
+               ", captain=" + captain +
+               ", captainName='" + captainName + '\'' +
+               '}';
     }
 
     public String getId() {

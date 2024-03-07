@@ -154,16 +154,18 @@ public class KothManager extends Manager {
         if (this.activeZone != null) this.cancel();
 
         // Create a duplicate instance of the zone from the cache
-        Zone clone = this.cachedZones.get(id);
-        if (clone == null) return;
+        Zone zone = Zone.from(this.cachedZones.get(id));
+        if (zone == null) return;
 
-        clone.setStartTime(System.currentTimeMillis());
+        System.out.println(zone.toString());
+
+        zone.setStartTime(System.currentTimeMillis());
 
         // Start the KOTH
         this.kothListener = new KothListener(this.rosePlugin);
         this.kothTask = new CaptureTask(this.rosePlugin).runTaskTimerAsynchronously(this.rosePlugin, 0L, 1);
         this.lastKothTime = System.currentTimeMillis();
-        this.activeZone = clone;
+        this.activeZone = zone;
 
         Bukkit.getPluginManager().registerEvents(this.kothListener, this.rosePlugin);
     }

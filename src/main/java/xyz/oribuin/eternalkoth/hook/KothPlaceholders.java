@@ -58,6 +58,7 @@ public class KothPlaceholders extends PlaceholderExpansion {
         int progress = (int) (progressPercent * barLength);
 
         if (progress > barLength) progress = barLength;
+        if (progress < 0) progress = 0;
 
         return HexUtils.colorify("&a" + barChar.repeat(progress) + "&c" + barChar.repeat(barLength - progress));
     }
